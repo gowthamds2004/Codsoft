@@ -1,0 +1,76 @@
+import tkinter as tk
+from tkinter import ttk
+
+# Dictionary to store contacts
+contacts = {}
+
+# Function to add a contact
+def add_contact():
+    name = name_entry.get()
+    phone = phone_entry.get()
+    if name and phone:  # Check if both fields are filled
+        contacts[name] = phone  # Store contact in the dictionary
+        name_entry.delete(0, tk.END)
+        phone_entry.delete(0, tk.END)
+        view_contacts()
+    else:
+        result_label.config(text="Name and Phone are required!", foreground="red")
+
+# Function to view all contacts
+def view_contacts():
+    contact_list.delete(*contact_list.get_children())  # Clear the treeview
+    for name, phone in contacts.items():
+        contact_list.insert("", tk.END, values=(name, phone))
+
+# Function to delete a selected contact
+def delete_contact():
+    selected_item = contact_list.selection()
+    if selected_item:
+        contact = contact_list.item(selected_item)["values"][0]  # Get the name
+        del contacts[contact]
+        view_contacts()
+    else:
+        result_label.config(text="Select a contact to delete!", foreground="red")
+
+# Create the main application window
+app = tk.Tk()
+app.title("Stylish Contact Manager")
+
+# Input fields for name and phone
+frame = ttk.Frame(app, padding="10")
+frame.grid(row=0, column=0, sticky=(tk.W, tk.E))
+
+ttk.Label(frame, text="Name:").grid(row=0, column=0, sticky=tk.W, padx=5, pady=5)
+name_entry = ttk.Entry(frame, width=30)
+name_entry.grid(row=0, column=1, padx=5, pady=5)
+
+ttk.Label(frame, text="Phone:").grid(row=1, column=0, sticky=tk.W, padx=5, pady=5)
+phone_entry = ttk.Entry(frame, width=30)
+phone_entry.grid(row=1, column=1, padx=5, pady=5)
+
+# Buttons for operations
+button_frame = ttk.Frame(app, padding="10")
+button_frame.grid(row=1, column=0, sticky=(tk.W, tk.E))
+
+add_button = ttk.Button(button_frame, text="Add Contact", command=add_contact)
+add_button.grid(row=0, column=0, padx=5, pady=5)
+
+delete_button = ttk.Button(button_frame, text="Delete Contact", command=delete_contact)
+delete_button.grid(row=0, column=1, padx=5, pady=5)
+
+view_button = ttk.Button(button_frame, text="View Contacts", command=view_contacts)
+view_button.grid(row=0, column=2, padx=5, pady=5)
+
+# Treeview to display contacts
+columns = ("Name", "Phone")
+contact_list = ttk.Treeview(app, columns=columns, show="headings", height=10)
+contact_list.heading("Name", text="Name")
+contact_list.heading("Phone", text="Phone")
+contact_list.grid(row=2, column=0, padx=10, pady=10)
+
+# Label to show messages
+result_label = ttk.Label(app, text="")
+result_label.grid(row=3, column=0, pady=5)
+
+# Run the application
+app.mainloop()
